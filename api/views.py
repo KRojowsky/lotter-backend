@@ -29,7 +29,6 @@ def create_member(request):
 
 
 @api_view(['GET', 'POST'])
-@permission_classes([IsAdminUser])
 def contact_message_list(request):
     if request.method == 'GET':
         messages = ContactMessage.objects.all()
