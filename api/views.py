@@ -1,5 +1,4 @@
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAdminUser, AllowAny
 from rest_framework.response import Response
 from rest_framework import status
 from .models import Member, ContactMessage
@@ -9,7 +8,6 @@ import logging
 logger = logging.getLogger(__name__)
 
 @api_view(['GET'])
-@permission_classes([IsAdminUser])
 def get_members(request):
     members = Member.objects.all()
     serializedData = MemberSerializer(members, many=True).data
@@ -27,6 +25,24 @@ def create_member(request):
         logger.error(f"Validation errors: {serializer.errors}")
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
+@api_view(['POST'])
+def check_member_status(request):
+    phone = request.data.get('phone')
+    receipt = request.data.get('receipt')
+
+    if not phone or not receipt:
+        return Response({'error': 'Wymagany numer telefonu i numer paragonu'}, status=status.HTTP_400_BAD_REQUEST)
+
+    try:
+        member = Member.objects.get(phone=phone, receipt=receipt)
+        return Response({'exists': True}, status=status.HTTP_200_OK)
+    except Member.DoesNotExist:
+        return Response({'exists': False}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        logger.error(f"Unexpected error: {str(e)}")
+        return Response({'error': 'Wystąpił nieoczekiwany błąd.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
 
 @api_view(['GET', 'POST'])
 def contact_message_list(request):
