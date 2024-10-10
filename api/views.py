@@ -1,8 +1,8 @@
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework import status
-from .models import Member, ContactMessage
-from .serializer import MemberSerializer, ContactMessageSerializer
+from .models import Member
+from .serializer import MemberSerializer
 import logging
 
 logger = logging.getLogger(__name__)
@@ -42,18 +42,4 @@ def check_member_status(request):
     except Exception as e:
         logger.error(f"Unexpected error: {str(e)}")
         return Response({'error': 'Wystąpił nieoczekiwany błąd.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-    
 
-@api_view(['GET', 'POST'])
-def contact_message_list(request):
-    if request.method == 'GET':
-        messages = ContactMessage.objects.all()
-        serializer = ContactMessageSerializer(messages, many=True)
-        return Response(serializer.data)
-
-    if request.method == 'POST':
-        serializer = ContactMessageSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

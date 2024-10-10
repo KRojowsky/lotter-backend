@@ -1,14 +1,9 @@
 from django.contrib import admin
-from .models import Member, ContactMessage
+from .models import Member
 
 @admin.register(Member)
 class MemberAdmin(admin.ModelAdmin):
-    list_display = ('id', 'first_name', 'last_name', 'phone', 'email', 'receipt')
-    search_fields = ('first_name', 'last_name', 'phone', 'email', 'receipt')
+    list_display = ('id', 'first_name', 'last_name', 'phone', 'email', 'receipt', 'purchase_date')  # Dodaj nowe pole
+    search_fields = ('first_name', 'last_name', 'phone', 'email', 'receipt', 'purchase_date')  # Dodaj nowe pole do wyszukiwania
     ordering = ('-id',)
-    
-@admin.register(ContactMessage)
-class ContactMessageAdmin(admin.ModelAdmin):
-    list_display = ('name', 'email', 'created_at')
-    search_fields = ('name', 'email', 'message')
-    readonly_fields = ('created_at',)
+
